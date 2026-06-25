@@ -39,6 +39,22 @@ pub fn scan_soundpacks() -> Vec<SoundPackInfo> {
         scan_dir(&local_dir, &mut packs);
     }
 
+    // Scan global fallback (~/.taptap/soundpacks)
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .or_else(|_| {
+            std::env::var("HOMEDRIVE").and_then(|drive| {
+                std::env::var("HOMEPATH").map(|path| format!("{}{}", drive, path))
+            })
+        });
+
+    if let Ok(home_path) = home {
+        let global_dir = std::path::PathBuf::from(home_path).join(".taptap").join("soundpacks");
+        if global_dir.exists() && global_dir.is_dir() {
+            scan_dir(&global_dir, &mut packs);
+        }
+    }
+
     packs
 }
 
@@ -60,11 +76,13 @@ fn scan_dir(dir_path: &std::path::Path, packs: &mut Vec<SoundPackInfo>) {
                         name: String,
                     }
                     if let Ok(meta) = serde_json::from_str::<Meta>(&json_str) {
-                        packs.push(SoundPackInfo {
-                            id: meta.id,
-                            name: meta.name,
-                            path: path.to_string_lossy().into_owned(),
-                        });
+                        if !packs.iter().any(|p| p.id == meta.id) {
+                            packs.push(SoundPackInfo {
+                                id: meta.id,
+                                name: meta.name,
+                                path: path.to_string_lossy().into_owned(),
+                            });
+                        }
                     }
                 }
             }

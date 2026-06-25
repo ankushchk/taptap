@@ -11,7 +11,7 @@ It compiles to an extremely small binary (**~800 KB**) consumes minimal resource
 *   ⚡ **Sub-Millisecond Latency**: Pre-decodes audio files into raw PCM buffers (`Vec<f32>`) at startup, completely removing runtime disk I/O and decoding overhead.
 *   🎵 **Concurrently Mixed Overlaps**: Audio slices are routed directly to the system hardware mixer. Typing fast produces natural, overlapping switch sounds (polyphony).
 *   🪶 **Ultra Lightweight**: Zero heavy dependencies, compiling down to under 800 KB and utilizing less than 10MB of RAM.
-*   📂 **Local Soundpack Discovery**: Automatically scans folders in your local `soundpacks/` directory and parses switch profiles (fully compatible with Mechvibes configurations).
+*   📂 **Soundpack Discovery**: Automatically scans folders in your local `soundpacks/` directory or your global `~/.taptap/soundpacks/` directory, and parses switch profiles (fully compatible with Mechvibes configurations).
 
 ---
 
@@ -71,7 +71,7 @@ This compiles the optimized release binary and installs it to your Cargo bin fol
 
 ## Adding Custom Soundpacks
 
-You can add custom soundpacks by dropping their folders into the `soundpacks/` directory. Each soundpack folder must contain:
+You can add custom soundpacks by dropping their folders into either the local `soundpacks/` directory (relative to your current working directory) or the global `~/.taptap/soundpacks/` directory. Each soundpack folder must contain:
 1. `config.json`: The mapping of scan codes to sound clips (Mechvibes standard).
 2. `sound.ogg` (or `.mp3` / `.wav`): The combined audio sprite file containing all sound clips.
 
