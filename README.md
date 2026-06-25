@@ -35,7 +35,7 @@ This compiles the optimized release binary and installs it to your Cargo bin fol
 
 ## Quick Start & Usage
 
-1. Open your terminal inside the project directory (which contains the `soundpacks/` folder) and run:
+1. Run `taptap` in your terminal (you can run this from any folder if installed globally, or from the project directory for local testing):
    ```bash
    taptap
    ```
