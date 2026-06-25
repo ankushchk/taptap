@@ -64,24 +64,18 @@ fi
 # 5. Download soundpacks
 SOUNDPACKS_DIR="${HOME}/.taptap/soundpacks"
 echo "Downloading mechanical switch soundpacks..."
+mkdir -p "$SOUNDPACKS_DIR"
 
-SOUNDPACKS="cherrymx-black-abs cherrymx-black-pbt cherrymx-blue-abs cherrymx-blue-pbt cherrymx-brown-abs cherrymx-brown-pbt cherrymx-red-abs cherrymx-red-pbt"
+TAR_URL="https://github.com/${GITHUB_REPO}/archive/refs/heads/master.tar.gz"
+TMP_TAR="${TMP_DIR}/repo.tar.gz"
 
-for pack in $SOUNDPACKS; do
-    echo "  Downloading $pack..."
-    mkdir -p "${SOUNDPACKS_DIR}/${pack}"
+if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$TAR_URL" -o "$TMP_TAR"
+elif command -v wget >/dev/null 2>&1; then
+    wget -qO "$TMP_TAR" "$TAR_URL"
+fi
 
-    CONFIG_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/master/soundpacks/${pack}/config.json"
-    SOUND_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/master/soundpacks/${pack}/sound.ogg"
-
-    if command -v curl >/dev/null 2>&1; then
-        curl -fsSL "$CONFIG_URL" -o "${SOUNDPACKS_DIR}/${pack}/config.json"
-        curl -fsSL "$SOUND_URL" -o "${SOUNDPACKS_DIR}/${pack}/sound.ogg"
-    elif command -v wget >/dev/null 2>&1; then
-        wget -qO "${SOUNDPACKS_DIR}/${pack}/config.json" "$CONFIG_URL"
-        wget -qO "${SOUNDPACKS_DIR}/${pack}/sound.ogg" "$SOUND_URL"
-    fi
-done
+tar -xzf "$TMP_TAR" -C "$SOUNDPACKS_DIR" --strip-components=2 "taptap-master/soundpacks"
 
 echo "=== taptap installed successfully! ==="
 echo "Run 'taptap' in your terminal to start typing with mechanical sounds."
