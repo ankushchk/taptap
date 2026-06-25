@@ -61,5 +61,21 @@ else
     sudo mv "$TMP_BINARY" "${INSTALL_DIR}/${BINARY_NAME}"
 fi
 
+# 5. Download default soundpack
+SOUNDPACKS_DIR="${HOME}/.taptap/soundpacks"
+echo "Downloading default CherryMX Black soundpack..."
+mkdir -p "${SOUNDPACKS_DIR}/cherrymx-black-abs"
+
+CONFIG_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/master/soundpacks/cherrymx-black-abs/config.json"
+SOUND_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/master/soundpacks/cherrymx-black-abs/sound.ogg"
+
+if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$CONFIG_URL" -o "${SOUNDPACKS_DIR}/cherrymx-black-abs/config.json"
+    curl -fsSL "$SOUND_URL" -o "${SOUNDPACKS_DIR}/cherrymx-black-abs/sound.ogg"
+elif command -v wget >/dev/null 2>&1; then
+    wget -qO "${SOUNDPACKS_DIR}/cherrymx-black-abs/config.json" "$CONFIG_URL"
+    wget -qO "${SOUNDPACKS_DIR}/cherrymx-black-abs/sound.ogg" "$SOUND_URL"
+fi
+
 echo "=== taptap installed successfully! ==="
 echo "Run 'taptap' in your terminal to start typing with mechanical sounds."
