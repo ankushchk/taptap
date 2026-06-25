@@ -12,7 +12,7 @@ echo "=== Installing taptap ==="
 # 1. Detect OS
 OS="$(uname -s)"
 case "$OS" in
-    Linux*)     PLATFORM="unknown-linux-musl" ;;
+    Linux*)     PLATFORM="unknown-linux-gnu" ;;
     Darwin*)    PLATFORM="apple-darwin" ;;
     *)          echo "Unsupported OS: $OS"; exit 1 ;;
 esac
