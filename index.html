@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>taptap - Mechanical Keyboard Sounds CLI</title>
+</head>
+<body>
+    <h1>taptap 🦀</h1>
+    <p>An ultra-lightweight, high-performance mechanical keyboard sound simulator CLI written in Rust.</p>
+    <p><a href="https://github.com/ankushchk/taptap" target="_blank">View on GitHub</a></p>
+
+    <h2>Features</h2>
+    <ul>
+        <li><strong>Sub-Millisecond Latency</strong>: Pre-decodes audio files into raw PCM buffers at startup, completely removing runtime disk I/O and decoding overhead.</li>
+        <li><strong>Concurrently Mixed Overlaps</strong>: Audio slices are routed directly to the system hardware mixer. Typing fast produces natural, overlapping switch sounds (polyphony).</li>
+        <li><strong>Ultra Lightweight</strong>: Zero heavy dependencies, compiling down to under 800 KB and utilizing less than 10MB of RAM.</li>
+        <li><strong>Soundpack Discovery</strong>: Automatically scans folders in your local <code>soundpacks/</code> directory and falls back to checking <code>~/.taptap/soundpacks/</code>.</li>
+    </ul>
+
+    <h2>Installation</h2>
+    <p>To install taptap globally on macOS, Linux, or Windows (Git Bash), run the following command in your terminal:</p>
+    <pre id="install-cmd">curl -fsSL https://raw.githubusercontent.com/ankushchk/taptap/master/install.sh | sh</pre>
+    <button onclick="copyCommand()">Copy Command</button>
+
+
+    <h2>Quick Start & Usage</h2>
+    <p>Run the program from any directory:</p>
+    <pre>taptap</pre>
+
+    <h3>CLI Commands & Flags</h3>
+    <ul>
+        <li><code>taptap help</code>: Show the help menu</li>
+        <li><code>taptap list</code>: List all installed soundpacks</li>
+        <li><code>taptap play &lt;index&gt; [optional_volume_0_100]</code>: Play a soundpack by index directly (e.g., <code>taptap play 1 90</code>)</li>
+    </ul>
+
+    <h2>Adding Custom Soundpacks</h2>
+    <p>You can add custom soundpacks by dropping their folders into either the local <code>soundpacks/</code> directory or the global <code>~/.taptap/soundpacks/</code> directory. Each folder must contain:</p>
+    <ol>
+        <li><code>config.json</code>: The mapping of scan codes to sound clips (Mechvibes standard).</li>
+        <li><code>sound.ogg</code>: The combined audio sprite file containing all sound clips.</li>
+    </ol>
+
+    <h2>Uninstallation</h2>
+    <p>To completely remove taptap and all its downloaded soundpacks from your system, run the following commands in your terminal:</p>
+    <pre>sudo rm /usr/local/bin/taptap
+rm -rf ~/.taptap</pre>
+
+    <script>
+        function copyCommand() {
+            var cmdText = document.getElementById("install-cmd").innerText;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(cmdText).then(onSuccess).catch(onError);
+            } else {
+                // Fallback for non-HTTPS (HTTP) sites
+                var textArea = document.createElement("textarea");
+                textArea.value = cmdText;
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    if (successful) {
+                        onSuccess();
+                    } else {
+                        onError("Copy command was unsuccessful");
+                    }
+                } catch (err) {
+                    onError(err);
+                }
+                document.body.removeChild(textArea);
+            }
+
+            function onSuccess() {
+                var btn = document.querySelector("button");
+                btn.innerText = "Copied!";
+                setTimeout(function() {
+                    btn.innerText = "Copy Command";
+                }, 2000);
+            }
+
+            function onError(err) {
+                console.error("Failed to copy: ", err);
+            }
+        }
+    </script>
+</body>
+</html>
