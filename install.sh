@@ -7,7 +7,38 @@ set -e
 GITHUB_REPO="ankushchk/taptap"
 BINARY_NAME="taptap"
 
-echo "=== Installing taptap ==="
+show_spinner() {
+    PID=$1
+    MESSAGE=$2
+    # Hide terminal cursor
+    printf "\033[?25l"
+    while kill -0 "$PID" 2>/dev/null; do
+        printf "\r  [⠋] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠙] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠹] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠸] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠼] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠴] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠦] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠧] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠇] %s" "$MESSAGE" && sleep 0.08
+        if ! kill -0 "$PID" 2>/dev/null; then break; fi
+        printf "\r  [⠏] %s" "$MESSAGE" && sleep 0.08
+    done
+    # Clear line, print checkmark, restore cursor
+    printf "\r\033[K  [✓] %s... Done!\n" "$MESSAGE"
+    printf "\033[?25h"
+}
+
+echo "=== Installing taptap 🦀 ==="
 
 # 1. Detect OS
 OS="$(uname -s)"
@@ -38,13 +69,19 @@ TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 TMP_BINARY="${TMP_DIR}/${BINARY_NAME}"
 
-echo "Downloading pre-compiled binary..."
 if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "$DOWNLOAD_URL" -o "$TMP_BINARY"
+    curl -fsSL "$DOWNLOAD_URL" -o "$TMP_BINARY" &
 elif command -v wget >/dev/null 2>&1; then
-    wget -qO "$TMP_BINARY" "$DOWNLOAD_URL"
+    wget -qO "$TMP_BINARY" "$DOWNLOAD_URL" &
 else
     echo "Error: curl or wget is required to install taptap."
+    exit 1
+fi
+DOWNLOAD_PID=$!
+show_spinner "$DOWNLOAD_PID" "Downloading pre-compiled binary"
+wait "$DOWNLOAD_PID"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to download pre-compiled binary."
     exit 1
 fi
 
@@ -63,16 +100,22 @@ fi
 
 # 5. Download soundpacks
 SOUNDPACKS_DIR="${HOME}/.taptap/soundpacks"
-echo "Downloading mechanical switch soundpacks..."
 mkdir -p "$SOUNDPACKS_DIR"
 
 TAR_URL="https://github.com/${GITHUB_REPO}/archive/refs/heads/master.tar.gz"
 TMP_TAR="${TMP_DIR}/repo.tar.gz"
 
 if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "$TAR_URL" -o "$TMP_TAR"
+    curl -fsSL "$TAR_URL" -o "$TMP_TAR" &
 elif command -v wget >/dev/null 2>&1; then
-    wget -qO "$TMP_TAR" "$TAR_URL"
+    wget -qO "$TMP_TAR" "$TAR_URL" &
+fi
+DOWNLOAD_PID=$!
+show_spinner "$DOWNLOAD_PID" "Downloading mechanical switch soundpacks"
+wait "$DOWNLOAD_PID"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to download mechanical switch soundpacks."
+    exit 1
 fi
 
 tar -xzf "$TMP_TAR" -C "$SOUNDPACKS_DIR" --strip-components=2 "taptap-master/soundpacks"
